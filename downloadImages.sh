@@ -8,7 +8,7 @@ select res in "${downloadType[@]}"; do
     selectedOpt=$REPLY
     while [[ $REPLY != "1" && $REPLY != "2" ]]; do
         PS3="Please select a valid option for the image type to be downloaded: "
-        select res in "${pullType[@]}"; do
+        select res in "${downloadType[@]}"; do
             selectedOpt=$REPLY
             break
         done
