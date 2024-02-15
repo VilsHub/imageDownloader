@@ -13,6 +13,7 @@ if [ -n "$downloadedImages" ]; then
         echo "Now extracting: $imageName"
         gunzip "$file"
     done
+    echo -e "All downloaded files extracted successfully....\n"
 else
     echo -e "No image found for extraction\n"
 fi
@@ -20,9 +21,7 @@ fi
 extractedImages=$(ls "$l_imageDir"/*.tar 2> /dev/null)
 
 if [ -n "$extractedImages" ]; then
-    echo -e "All downloaded files extracted successfully....\n"
     echo "Initiating Image import process...."
-
     for file in $extractedImages; do
         imageName=$(basename $file)
         echo "Importing image: $imageName"
