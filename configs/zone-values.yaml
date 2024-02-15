@@ -3,6 +3,10 @@ deploy:
   institution: FBN
 # the institution's code
   institutionCode: "011" 
+# the attaching ofi institution's code (eg Global accelerex, habari pay etc )
+  ofiInstitutionCode: ""
+# the settlment partner's bank institution code
+  zoneSettlementBankCode: "214" #Prod
 # the env development, qa, loadtest, staging & production
   environment: staging 
 # single or multi. default is multi (for cluster env)
@@ -12,35 +16,23 @@ deploy:
   isPlatformProvider: false
 # set to true if the env is an OFI environment
   isOFIEnvironment: false
-image:
-  #repository: zoneswitchacr.zonev2.io:4455/zonev2
-  repository: zoneswitchacr.azurecr.io # For Airgab environment
-  pullSecret: eyJhdXRocyI6eyJ6b25lc3dpdGNoYWNyLnpvbmV2Mi5pbzo0NDU1Ijp7InVzZXJuYW1lIjoiYWRtaW4iLCJwYXNzd29yZCI6IkhhcmJvcjEyMzQ1IiwiYXV0aCI6IllXUnRhVzQ2U0dGeVltOXlNVEl6TkRVPSJ9fX0=
+# image:
+#   #repository: zoneswitchacr.zonev2.io:4455/zonev2
+#   repository: zoneswitchacr.azurecr.io # For Airgab environment
+#   pullSecret: eyJhdXRocyI6eyJ6b25lc3dpdGNoYWNyLnpvbmV2Mi5pbzo0NDU1Ijp7InVzZXJuYW1lIjoiYWRtaW4iLCJwYXNzd29yZCI6IkhhcmJvcjEyMzQ1IiwiYXV0aCI6IllXUnRhVzQ2U0dGeVltOXlNVEl6TkRVPSJ9fX0=
 # mssql configuration
 mssql: 
   server: 10.2.249.218
-  userName: ZONESWITCHUSER
-  password: Welcome+123$$!!!
   port: 1433
-  database: zoneSwitch
-  databaseIntegratedSecurity: false
-  databaseInSecure: true
-  connectionStringPgauth: Server=10.2.249.218,1433;Database=pgAuth;User ID=ZONESWITCHUSER;Password=Welcome+123$$!!!;Encrypt=false;TrustServerCertificate=true;
-  connectionStringPggateway: Server=10.2.249.218,1433;Database=pggateway;User ID=ZONESWITCHUSER;Password=Welcome+123$$!!!;Encrypt=false;TrustServerCertificate=true;
-  connectionStringZoneswitch: Server=10.2.249.218,1433;Database=ZoneSwitch;User ID=ZONESWITCHUSER;Password=Welcome+123$$!!!;Encrypt=false;TrustServerCertificate=true;
   jdbcURL: jdbc:sqlserver://10.2.249.218:1433;databaseName=tempdb;encrypt=false;user=ZONESWITCHUSER;password=Welcome+123$$!!!;integratedSecurity=false;
-# redis configuration
-redis: 
-  userName: "" #leave as blank unless stated otherwise 
-  password: "" #leave as blank unless stated otherwise  
 # vault configuration
 vault: 
-  vaultToken: 5ajWEZLqiPRkR0YbHLEDGVSW #root token
+  token: 5ajWEZLqiPRkR0YbHLEDGVSW #root token
 # besu configuration (Please check the configuration per environment below)
 besu: 
-  besuChainId: 1337
-  besuContractAddress: 0xA7c59f010700930003b33aB25a7a0679C860f29c
-  besuSettlementContractAddress: 0xA7c59f010700930003b33aB25a7a0679C860f29c
+  chainId: 1337
+  contractAddress: 0xA7c59f010700930003b33aB25a7a0679C860f29c
+  settlementContractAddress: 0xA7c59f010700930003b33aB25a7a0679C860f29c
 # pggateway configuration
 pggateway: 
 # public endpoint for pggateway
@@ -70,11 +62,31 @@ emailservice:
     mailServicePassword: Qwerty@.600600 #Leave as default if not available
 # the FEP server connection (Block is not needed for OFI's and should be removed)
 sinkNode: 
-  sinkNodeHostname: 172.30.2.91 #Bank's FEP IP
+  hostname: 172.30.2.91 #Bank's FEP IP
   issuerProcessor:
-    sinkNodePort: 29020
+    port: 29020
   reversalProcessor:
-    sinkNodePort: 29020
+    port: 29020
+# # journal fetcher implementation for FCMB (Block is needed for only FCMB and Bank should be removed for other use cases)
+# journalfetcher: 
+#   enabled: false
+#   config:
+#     baseUrl: http://localhost:5011/JournalFetcher/api
+#     instrumentation: FCMB_INSTRUMENTATION
+#     userId: SaUser
+#   secret:
+#     userPassword: SaPassword
+# zone service features
+# Enable optional product features for zone services (Note: the default is false and should be enabled on institution's request)
+#zoneServiceFeatures:
+#  cashWithdrawalRouCount:
+#    enabled: true
+#    isROUSurchargeVATExclusive: false
+#    numberOfROUFreeTransactions: 3
+#  cardAcceptorId: true
+#  isSchemeSpecificSecondaryAccount: false
+#  setAuthorizationId: false
+#  setIssuerRID: true
 # CBA bank connector (Block is not needed for OFI's and should be removed)
 bankconnector:
   # -- Enable bank connector deployment .
@@ -145,3 +157,88 @@ bankconnector:
   #    port: 8080
   #    protocol: TCP
   #    targetPort: 8080
+
+# cyberark
+cyberark:
+  # -- Enable cyberark deployment 
+  enable: false
+  cyberark:
+    # -- Docker repository from which to pull the cyberark image.
+    image:
+      name: zonecyberark
+      tag: latest
+    # -- Container port to expose cyberark container (should be the same with target port).
+    #containerPort: 8080
+    # -- Resource specification for bankconnect's container
+    #resources:
+    #  limits:
+    #    cpu: 300m
+    #    memory: 512Mi
+    #  requests:
+    #    cpu: 50m
+    #    memory: 64Mi
+    # -- Enable readiness or liveness probe 
+    #probe:
+    #  enableLivenessProbe: false
+    #  enableReadinessProbe: false
+    # -- Configure liveness probe
+    #livenessProbe:
+    #  httpGet:
+    #    path: /health/live
+    #    port: 8080
+    #  failureThreshold: 5
+    #  initialDelaySeconds: 5
+    #  periodSeconds: 60
+    #  successThreshold: 1
+    #  timeoutSeconds: 2
+    # -- Configure readiness probe
+    #readinessProbe:
+    #  httpGet:
+    #    path: /health/ready
+    #    port: 8080
+    #  failureThreshold: 5
+    #  initialDelaySeconds: 2
+    #  periodSeconds: 30
+    #  successThreshold: 1
+    #  timeoutSeconds: 2
+  # -- Default no of replicas is set to 1
+  #replicas: 1
+  # -- set to create configmap / secrets
+  create:
+    config: true
+    secret: true
+  config:
+    Logging__LogLevel__Default: "Trace"
+    Logging__LogLevel__Microsoft.AspNetCore: "Warning"
+    VaultIntervalInMins: 1000000
+    InstrumentName: "BankVaultInstrument"
+    BankVaultInstrument__CyberArk__Safe: "#CYBERARK_SAFE"
+    BankVaultInstrument__CyberArk__AppId: "#CYBERARK_APPID"
+    BankVaultInstrument__CyberArk__ZoneSwitchObj: "#CYBERARK_OBJECT"
+    BankVaultInstrument__CyberArk__ZoneSwitchCoreObj: "#CYBERARK_OBJECT"
+    BankVaultInstrument__CyberArk__ZoneSwitchRealTimeObj: "#CYBERARK_OBJECT"
+    BankVaultInstrument__CyberArk__ZoneAdminPortalObj: "#CYBERARK_OBJECT"
+    BankVaultInstrument__CyberArk__ReconObj: "#CYBERARK_OBJECT"
+    BankVaultInstrument__CyberArk__FtMiddlewareObj: "#CYBERARK_OBJECT"
+    BankVaultInstrument__CyberArk__PgGateWayObj: "#CYBERARK_OBJECT"
+    BankVaultInstrument__CyberArk__Reason: "#CYBERARK_REASON"
+    BankVaultInstrument__CyberArk__SqlDbPort: ""
+    BankVaultInstrument__CyberArk__PostgressDbPort: ""
+    vault__HashiCorpVaultConfig__url: "#VAULT_URL"
+    vault__HashiCorpVaultConfig__secretpath: "#VAULT_SECRETPATH"
+    vault__HashiCorpVaultConfig__mountpoint: "#VAULT_MOUNTPOINT"
+    CollectorUrl: "http://localhost:9002/zonecyberark"
+    OtlpEndpoint: "http://localhost:4317"
+    AllowedHosts: "*"
+    ASPNETCORE_URLS: "http://+:8080"
+  # -- set key value pair in yml notation for secret to be passed as enviroment variables to cyberark conatiner
+  secret:
+    vault__HashiCorpVaultConfig__token: "#VAULT_TOKEN"
+  # -- service configuration for cyberark
+  #service:
+  #  ports:
+  #  - name: cyberark
+  #    port: 8080
+  #    protocol: TCP
+  #    targetPort: 8080
+  #  type: ClusterIP

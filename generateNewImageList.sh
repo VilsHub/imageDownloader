@@ -1,9 +1,9 @@
 #!/bin/bash
 echo -e "\nThis will help generate a new image list of non downloaded images from an existing images list"
-read -p "Please specify the existing image list file: " oldImageListFile
+read -p "Please specify the existing image list file in the './configs' directory: " oldImageListFile
 
 # Local directories
-l_imageDir="./imgTemp/"
+l_imageDir="./imgTemp"
 l_configsDir="./configs"
 
 #Check if file exist
@@ -67,7 +67,9 @@ nImageList="$l_configsDir/$fileName"
 rm -f $nImageList
 while read image; do
     # check if images is downloaded aleady
-    targetImageFile="$l_imageDir/$image.tar.gz"
+    image_name=$(echo $image | cut -d'/' -f 2)
+    targetImageFile="$l_imageDir/$image_name.tar.gz"
+    fullImageName="$l_imageDir/$image.tar.gz"
 
     if [ ! -f $targetImageFile ]; then
         # File does not exist

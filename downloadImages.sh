@@ -69,7 +69,7 @@ fi
 dir="/tmp/airGapTempFiles"
 r_configsDir="$dir/configs"
 r_imageDir="$dir/images"
-dockerImageDir="$r_imageDir/docker"
+dockerImageOutputDir="$dir/tempOutput"
 
 
 echo "Initiating environment setup on remote server...."
@@ -95,7 +95,7 @@ echo -e "Image download completed successfully\n"
 
 echo "Initiating image download from the remote server to local server...."
 
-[ $selectedOpt = "1" ] && sourceDir=$dockerImageDir || sourceDir=$chartImageDir
+[ $selectedOpt = "1" ] && sourceDir=$dockerImageOutputDir || sourceDir=$chartImageDir
 
 scp -P $prt $pk -r $server_username@$serverHost:$sourceDir/* $l_imageDir
 echo -e "All images has been downloaded successfully....\n"

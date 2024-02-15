@@ -4,6 +4,7 @@
 dir="/tmp/airGapTempFiles"
 configsDir="$dir/configs"
 imageDir="$dir/images"
+dockerImageOutputDir="$dir/tempOutput"
 
 trackDir="$dir/track/docker"
 dockerImageDir="$imageDir/docker"
@@ -26,6 +27,8 @@ if [ ! -f "$dir/error" ]; then
     chmod a+w "$dir/error"
 fi
 
+# Clear tempOutputDir
+rm -f $dockerImageOutputDir/*
 
 imageListFile=$1
 
@@ -37,9 +40,11 @@ while read image; do
     image_name=$(echo $image | cut -d'/' -f 2)
     e_image="$trackDir/$image_name.track"
 
+    retrieved=0
     if [ -f $e_image ]; then
         # File exist
         echo -e "The image $image_name has been downloaded already\n"
+        retrieved=1
     else
         echo "Pulling image $image"
         docker pull $image 2> "$dir/error"
@@ -65,7 +70,7 @@ while read image; do
 
             # Set permissions
             chmod a+w $e_image
-
+            retrieved=1
             echo -e "\n"
 
         else
@@ -75,6 +80,13 @@ while read image; do
             echo -e "\n"
             
         fi
+    fi
+
+    if [ $retrieved -eq 1 ]; then
+        # Copy image file to dockerImageOutputDir
+        echo "Marking it for download......"
+        cp -p $dockerImageDir/$image_name.tar.gz $dockerImageOutputDir/
+
     fi
 done < "$configsDir/$imageListFile"
 

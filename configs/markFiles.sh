@@ -43,11 +43,9 @@ if [[ $type = "3" || $type = "4" ]]; then
         if [ -f $targetImage ]; then
             # File exist, copy to output directory
             cp $targetImage $output/$image_name.tar.gz
-            echo -e "The image $image_name has been marked for downloaded\n"   
+            echo -e "The image $image_name has been marked for download\n"   
         else
             echo -e "Error: The  $image_name image has not been pulled yet, kindly try downloading the image before attempting to download the pulled images\n"
-            echo -e "Press CTR + C to exit\n"
-            exit 2
         fi
 
     done < "$configsDir/$imageListFile"
