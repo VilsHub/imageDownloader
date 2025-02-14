@@ -36,27 +36,25 @@ This script is used to get the list of images for a Helm chart
 ## How to dowload images
 To download images, take the following steps:
 
- 1. Make all the .sh files executalbe and make the scripts in the **./src/** directory executable for all users (**chmod a+x ./scr/*.sh**)
+ 1. Make all the .sh files executalbe and make the scripts in the **./local_src/** directory executable for all users (**chmod a+x ./local_scr/*.sh**)
    
- 2. If you want to download chart images then include the **.yaml** file in the **./configs** directory, but if you want to download just images then inlcude a text file of images to be downloaded in the **./configs** directory.
+ 2. Execute the **downloadImages.sh** script. This will prompt you to select to select the type of images to be downloaded, which could either be **Docker images**, or **Chart images**.
    
- 3. Execute the **downloadImages.sh** script. This will prompt you to select to select the type of images to be downloaded, which could either be **Docker images**, or **Chart images**.
+ 3. Follow the prompt to supply the SSH credentials of the proxy server.
    
- 4. Follow the prompt to supply the SSH credentials of the proxy server.
+ 4. For docker image download you, would be asked to supply the name of the file which is expected to hold the list of images on each new line. But chart images, you would be asked the followings:
    
- 5. For docker image download you, would be asked to supply the name of the file in the **./configs** directory that holds which is expected to hold the list of images on each new line. But chart images, you would be asked the followings:
-   
-      - The name of the helm chart. Example zonedepenendecies
+      - The name of the helm release. Example zonedepenendecies
       - The version number for helm chart. Example 1.0.202
-      - The repository of the helm chart. Example zone/zone
-      - The .yaml file name in the ./configs directory to be used
+      - The chart reference of the helm chart. Example zone/zone
+      - The values file for the chart if required
 
- 6. Once done, you may be asked for your SSH password multiple for task execution, but this depends on the remote server SSH configuration. On the last task, which would downloading of images to local server, you may choose to proceed on this stage or continue later using the **downloadPulledImages.sh** script
+ 5. Once done, you may be asked for your SSH password multiple for task execution, but this depends on the remote server SSH configuration. On the last task, which would downloading of images to local server, you may choose to proceed on this stage or continue later using the **downloadPulledImages.sh** script
 
 **Note**
 - If connectivity is broken, during the image pull process on the remote, the process will always resume from where it stopped on resumption 
 - All downloaded images are compressed in **.tar.gz** format
-- For chart images, the list of all the images would always be downloaded and stored in the directory **./imgTemp/[chartName]_[version]_image_list.txt**. In a case where its fails to download due to connectivity, make use of the script **getChartImageList.sh** to get the image list.
+- For chart images, the list of all the images would always be downloaded and stored in the directory **./imgTemp/[releaseName]_[version]_image_list.txt**. In a case where its fails to download due to connectivity, make use of the script **getChartImageList.sh** to get the image list.
 
 ## How to import the downloaded images
 To import the downloaded images into the *ctr* scope, take the steps below:
