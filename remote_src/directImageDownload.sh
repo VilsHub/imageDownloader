@@ -19,6 +19,7 @@ if [ ! -d $trackDir ]; then
     # Directory does not exist
     mkdir -p $trackDir
     chmod a+wr $trackDir
+    chmod a+wr $dir/track
 fi
 
 if [ ! -f "$dir/error" ]; then

@@ -19,6 +19,12 @@ if [ ! -d $chartImageDir ]; then
     chmod a+wr $imageDir/$releaseName $imageDir/$releaseName/$versionNumber
 fi
 
+if [ ! -d $trackDir ]; then
+    # Directory does not exist
+    mkdir -p $trackDir
+    chmod a+wr $trackDir
+fi
+
 # Example releaseName=zone, chartReference=zone/zone
 
 echo "Updating helm repo and installing zone..."
