@@ -113,7 +113,8 @@ if [[ $selectedOpt = "3" || $selectedOpt = "4" ]]; then
         touch $install_tracker_file
     else
         # check if remote server exist in tracker file
-        ec=$($install_tracker_file | grep -w $serverHost > /dev/null)
+        cat $install_tracker_file | grep -w $serverHost > /dev/null
+        ec=$?
         if [ $ec -eq 0 ]; then #script already installed on server
             installed=1
         fi
@@ -123,13 +124,13 @@ if [[ $selectedOpt = "3" || $selectedOpt = "4" ]]; then
     if [ $installed -eq 0 ]; then #script not installed on server
         echo "Initiating environment setup on remote server...."
         # Setup directories
-        ssh -p $prt $pk $server_username@$serverHost < $init
+        ssh -p $prt $pk $server_username@$serverHost "bash -s" < $init
         echo -e "Environment setup on remote server completed successfully....\n"
 
         # Copy remote source files to remote server
-        echo "Initiating copying of config files to the remote server...."
+        echo "Initiating copying of remote source files to the remote server...."
         scp -pP $prt $pk -r $remote_src/* $server_username@$serverHost:$r_configsDir/ &&
-        echo -e "Copied config files  successfully to the remote server\n" &&
+        echo -e "Copied source files  successfully to the remote server\n" &&
 
         # mark as installed
         echo $serverHost >> $install_tracker_file
