@@ -17,7 +17,7 @@ select res in "${cleanUpType[@]}"; do
     break
 done
 
-clear="./src/clear.sh"
+clear="./local_src/clear.sh"
 
 read -p "Please specify the remote server host: " serverHost
 read -p "Please specify the remote server username: " server_username

@@ -5,25 +5,25 @@ dir="/tmp/airGapTempFiles"
 configsDir="$dir/configs"
 imageDir="$dir/images"
 
-chartName=$3
-repositoryName=$4
+releaseName=$3
+chartReference=$4
 versionNumber=$1
 valueFile=$2
 
 trackDir="$dir/track"
-chartImageDir="$imageDir/$chartName/$versionNumber"
+chartImageDir="$imageDir/$releaseName/$versionNumber"
 
 if [ ! -d $chartImageDir ]; then
     # Directory does not exist
     mkdir -p $chartImageDir
-    chmod a+wr $imageDir/$chartName $imageDir/$chartName/$versionNumber
+    chmod a+wr $imageDir/$releaseName $imageDir/$releaseName/$versionNumber
 fi
 
-# Example chartName=zone, repositoryName=zone/zone
+# Example releaseName=zone, chartReference=zone/zone
 
 echo "Updating helm repo and installing zone..."
 helm repo update
-helm upgrade $chartName $repositoryName --version $versionNumber -f "$configsDir/$valueFile" --dry-run > "$dir/zone-values.txt" 
+helm upgrade --install $releaseName $chartReference --version $versionNumber -f "$configsDir/$valueFile" --dry-run > "$dir/zone-values.txt" 
 
 # Set permissions
 chmod a+w "$dir/zone-values.txt"
@@ -39,7 +39,7 @@ mv $dir/zone-values-extract-unix.txt $dir/zone-values-extract.txt
 chmod a+w "$dir/zone-values-extract.txt"
 
 # Store image list for reference
-cp -p "$dir/zone-values-extract.txt" $chartImageDir/$chartName"_"$versionNumber"_image_list.txt"
+cp -p "$dir/zone-values-extract.txt" $chartImageDir/$releaseName"_"$versionNumber"_image_list.txt"
 
 # Download and compress images
 echo -e "Initiating pulling and saving of docker images....\n"
@@ -54,7 +54,7 @@ fi
 while read image; do
     # check if images is downloaded aleady
     image_name=$(echo $image | cut -d'/' -f 2)
-    e_image="$trackDir/$chartName"_"$versionNumber"_"$image_name.track"
+    e_image="$trackDir/$releaseName"_"$versionNumber"_"$image_name.track"
 
     if [ -f $e_image ]; then
         # File exist
